@@ -154,7 +154,7 @@ evf = function(data, pred, propensity){
 #' This matrix must include all subjects in `train_data`.
 #' @param g_func a function that transforms the differences between outcomes
 #' of a set of subjects and the subjects in their matched sets to the weights
-#' in SVMs. In `equation (6)` in `Section 2.2` of the manuscript,
+#' in SVMs. In `equation (7)` in `Section 2.2` of the manuscript,
 #' `g(\cdot) = |\cdot|` and the weights are `|Rj-Ri|`.
 #' @param kernel the kernel function used in SVMs. Supported argument values
 #' can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
@@ -188,7 +188,7 @@ evf = function(data, pred, propensity){
 #' @importFrom personalized weighted.ksvm
 #'
 #' @export
-weighted.ksvm.2 = function(
+mlearn.wsvm = function(
   train_data, test_data, idx,
   trts, max_size, delta, dist_mat, g_func,
   kernel="rbfdot", kpar="automatic", C
@@ -291,7 +291,7 @@ weighted.ksvm.2 = function(
 #' This matrix must include all subjects in `train_data`.
 #' @param g_func a function that transforms the differences between outcomes
 #' of a set of subjects and the subjects in their matched sets to the weights
-#' in SVMs. In `equation (6)` in `Section 2.2` of the manuscript,
+#' in SVMs. In `equation (7)` in `Section 2.2` of the manuscript,
 #' `g(\cdot) = |\cdot|` and the weights are `|Rj-Ri|`.
 #' @param kernel the kernel function used in SVMs. Supported argument values
 #' can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
@@ -321,7 +321,7 @@ weighted.ksvm.2 = function(
 #' }
 #'
 #' @export
-weighted.ksvm.2.tune = function(
+mlearn.wsvm.tune = function(
   data, idx,
   trts, max_size, delta, dist_mat, g_func,
   kernel="rbfdot", kpar="automatic",
@@ -342,12 +342,12 @@ weighted.ksvm.2.tune = function(
       train_idx = seq(nrow(data))[-inner_test]
     }
 
-    print(paste("Inner fold",k,"has",length(train_idx),"training samples."))
+    # print(paste("Inner fold",k,"has",length(train_idx),"training samples."))
 
     ## for each tuning parameter (set), fit a weighted SVM for multicategory treatment recommendation
     for (i in 1:nrow(tuneGrid)){
       fit = try(
-        weighted.ksvm.2(
+        mlearn.wsvm(
           train_data=data[train_idx,], test_data=data[inner_test,], idx,
           trts, max_size, delta, dist_mat, g_func,
           kernel, kpar, C=tuneGrid[i,1]),
@@ -378,7 +378,7 @@ weighted.ksvm.2.tune = function(
   } else {
     ## get the final model by training on the whole dataset using the best tuning parameter(s)
     best_fit = try(
-      weighted.ksvm.2(
+      mlearn.wsvm(
         train_data=data, test_data=data, idx,
         trts, max_size, delta, dist_mat, g_func,
         kernel, kpar, C=best_param),
@@ -389,7 +389,7 @@ weighted.ksvm.2.tune = function(
     ## if using the whole dataset does not converge, train on the fold with the maximum EVF to get the final model
     if (class(best_fit) == "try-error") {
       test_idx = which(foldid_inner == which.max(cv_mat[best_idx, ]))
-      best_fit = weighted.ksvm.2(
+      best_fit = mlearn.wsvm(
         train_data=data[-test_idx,], test_data=data[test_idx,], idx,
         trts, max_size, delta, dist_mat, g_func,
         kernel, kpar, C=best_param)
@@ -432,7 +432,7 @@ weighted.ksvm.2.tune = function(
 #' This matrix must include all subjects in `train_data`.
 #' @param g_func a function that transforms the differences between outcomes
 #' of a set of subjects and the subjects in their matched sets to the weights
-#' in SVMs. In `equation (6)` in `Section 2.2` of the manuscript,
+#' in SVMs. In `equation (7)` in `Section 2.2` of the manuscript,
 #' `g(\cdot) = |\cdot|` and the weights are `|Rj-Ri|`.
 #' @param kernel the kernel function used in SVMs. Supported argument values
 #' can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
@@ -472,7 +472,7 @@ weighted.ksvm.2.tune = function(
 #' @importFrom dplyr arrange
 #' @importFrom pracma combs
 #' @export
-weighted.ksvm.2.cv = function(
+mlearn.wsvm.cv = function(
   data, idx,
   trts, max_size,  delta, dist_mat, g_func,
   kernel="rbfdot", kpar="automatic",
@@ -508,7 +508,7 @@ weighted.ksvm.2.cv = function(
     print(paste("Outer fold",k,"has",length(train_idx),"training samples."))
 
     ## fit weighted SVMs with tuning parameters on training folds
-    fit = weighted.ksvm.2.tune(
+    fit = mlearn.wsvm.tune(
       data=data[train_idx,], idx=idx[train_idx,],
       trts, max_size, delta, dist_mat, g_func,
       kernel, kpar,

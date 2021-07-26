@@ -1,4 +1,5 @@
 ^MultiMlearn\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^data-raw$
+^data-raw
+^MultiMlearn/README\.Rmd
