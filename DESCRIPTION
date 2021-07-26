@@ -1,0 +1,24 @@
+Package: MultiMlearn
+Title: Statistical Learning Methods for Optimizing Individualized Treatment Rules
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Jitong", "Lou",  role = c("aut", "cre", "cph"), email = "jitonglou@gmail.com",
+            comment = c(ORCID = "0000-0002-1049-0416")),
+    person("Yuanjia", "Wang", role = c("ctb", "ths", "cph")),
+    person("Donglin", "Zeng", role = c("ctb", "ths", "cph"))
+    )
+Maintainer: Jitong Lou <jitonglou@gmail.com>
+Description: We provide a software package to estimate individualized treatment rules from multicategory treatments. In general, we use a matched learning (M-learning) method and the idea of one-versus-one approach.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports:
+	dplyr, personalized, caret, randomForest, magrittr, pracma
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
