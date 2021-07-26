@@ -16,15 +16,15 @@ knitr::opts_chunk$set(
 ```
 
 ## Overview
-The `MultiMlearn` package is designed for estimating the individualized treatment rules (ITRs) under the setting of multicategory treatments. It is designed for data from observational studies (such as electronic health records) but it can also be used for randomized controlled trials. </br>
+The `MultiMlearn` package is designed for estimating the individualized treatment rules (ITRs) under the setting of multicategory treatments. It is designed for data from observational studies (such as electronic health records), but it can also be used for randomized controlled trials. </br>
 
 The `MultiMlearn` package implements a matched learning (M-learning) model that uses the one-versus-one approach to convert the multicategory treatment comparison to a set of binary classification problems. </br>
 
-Also, the proposed model can incorporate the identified latent subgroup information ([Lou et al, 2021](https://onlinelibrary.wiley.com/doi/10.1002/sim.8880)) to alleviate confounding effects among subjects and improve the performance of the M-learning.
-The coding example for subgroup identification can be found at [this GitHub repository](https://github.com/jitonglou/EHR_ITR), while it is not a function of the `MultiMlearn` package.
+Also, the proposed model can incorporate the identified latent subgroup information to alleviate confounding effects among subjects and improve the performance of the M-learning.
+The coding example for subgroup identification can be found on [this GitHub repository](https://github.com/jitonglou/IdSubgroup), while it is currently not a function of the `MultiMlearn` package.
 
 ## Documentation
-A simulation study illustrating the necessity of latent subgroup information can be found in [this supplementary material](https://github.com/jitonglou/MultiMlearn/vignettes/supp_v3.pdf).
+A simulation study illustrating the necessity of latent subgroup information can be found in [this supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf).
 The following explainatory example uses a similar simulation scenario to that stated in Section S.1.
 
 ## Installation
@@ -34,7 +34,7 @@ devtools::install_github("jitonglou/MultiMlearn")
 ```
 
 ## Usage
-Load the package:
+Load the packages:
 ```{r setup}
 library(MultiMlearn)
 library(dplyr)
@@ -43,7 +43,7 @@ library(personalized)
 ```
 
 ### Simulate a dataset
-Following the settings (equation (1), (2), (5), and (6)) in Section S.1.1 and S.1.2 of the [supplementary material](https://github.com/jitonglou/MultiMlearn/vignettes/supp_v3.pdf), we simulate a dataset for N=200 subjects. The covariate vector $\mathbf{x}_i$ was set to be p=20 dimensional. Moreover, we set the number of treatments K=4, the number of groups J=4.
+Following the settings (equation (1), (2), (5), and (6)) in Section S.1.1 and S.1.2 of the [supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf), we simulate a dataset for N=200 subjects. The covariate vector $\mathbf{x}_i$ was set to be p=20 dimensional. Moreover, we set the number of treatments K=4, the number of groups J=4.
 ```{r simdata}
 rseed = 0
 set.seed(rseed)
@@ -120,6 +120,7 @@ sub_prop = predict(
 We performs a nested cross-validation (on tuning parameters) of weighted support vector machines (SVMs) to fit the M-learning model and estimate ITRs.
 
 #### Create the final dataset and compute distance between subjects
+Incorporate the estimated propensity and prognostics scores to the feature set, and compute the Euclidean distance between subjects based on the features.
 ```{r final data}
 ## final data frame
 data_feature = data.frame(
@@ -133,6 +134,7 @@ dist_feature = data_feature %>%
   select(-ID, -cluster, -treatment, -reward, -reward_res) %>%
   dist() %>%
   as.matrix()
+summary(c(dist_feature))
 
 ## Create an index data frame to select the corresponding row of the distance matrix
 idx_data_feature = data.frame(ID=data_feature$ID, index=1:nrow(data_feature)) 
@@ -148,10 +150,10 @@ nfolds_inner = 3 # number of folds in the inner layer of the nested cross-valida
 g_func = function(x){abs(x)} # weights on the outcome in support vector machines
 max_size = 1 # maximum size of the matched set
 
-## Fit M-learning model (around 2 minutes)
+## Fit M-learning model (around 1 minute)
 set.seed(rseed)
-# ?weighted.ksvm.2.cv # explanation of arguments
-ITR = weighted.ksvm.2.cv(
+# ?mlearn.wsvm.cv # explanation of arguments
+ITR = mlearn.wsvm.cv(
   data=data_feature, idx=idx_data_feature,
   trts=levels(data_feature$treatment), max_size=max_size,
   delta=max(dist_feature), dist_mat=dist_feature, g_func=g_func,
@@ -164,7 +166,7 @@ head(ITR$prediction) # "vote" represents the recommended treatments for the subj
 ```
 
 ### Summarize results
-We extract the recommended treatments of the ITR, and then calculate the empirical value function (EVF) and misclassification rate as equation (3) and equation (4) in the supplementary material. 
+We extract the recommended treatments of the ITR, and then calculate the empirical value function (EVF) and misclassification rate as equation (3) and equation (4) in the [supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf). 
 ```{r result}
 ## create a function to calculate EVF
 evf.func = function(reward, pi, x, y){
@@ -189,5 +191,5 @@ summary_evf = ITR$prediction %>%
 summary(summary_evf)
 ```
 Compared with the observed treatments, the recommended treatments by M-learning have a greater EVF (2.0159 vs 1.1622) and a lower misclassification rate (0 vs. 0.7806) on average. </br> 
-To obtain the same results in Table S1 and Figure S1 in Section S.1.3 of the supplementary material, you need to run the above scripts for group 2 to 4, and repeat the procedure for 100 times using `rseed=1,...,100`, `ntree=seq(500,5000,500)`, `ksvm.grid = expand.grid(C = 2^(-15:15))`, `nfolds_outer = 5`, and `nfolds_outer = 5`. Each replication can be done parrellely. 
+To reproduce the results in Table S1 and Figure S1 in Section S.1.3 of the [supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf), you need to run the above scripts for group 2 to 4, and repeat the procedure for 100 times using `rseed=1,...,100`, `ntree=seq(500,5000,500)`, `ksvm.grid = expand.grid(C = 2^(-15:15))`, `nfolds_outer = 5`, and `nfolds_outer = 5`. Each replication can be done by parallel computing. 
 

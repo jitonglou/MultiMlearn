@@ -142,13 +142,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<p>The <code>MultiMlearn</code> package is designed for estimating the individualized treatment rules (ITRs) under the setting of multicategory treatments. It is designed for data from observational studies (such as electronic health records) but it can also be used for randomized controlled trials. </br></p>
+<p>The <code>MultiMlearn</code> package is designed for estimating the individualized treatment rules (ITRs) under the setting of multicategory treatments. It is designed for data from observational studies (such as electronic health records), but it can also be used for randomized controlled trials. </br></p>
 <p>The <code>MultiMlearn</code> package implements a matched learning (M-learning) model that uses the one-versus-one approach to convert the multicategory treatment comparison to a set of binary classification problems. </br></p>
-<p>Also, the proposed model can incorporate the identified latent subgroup information (<a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.8880">Lou et al, 2021</a>) to alleviate confounding effects among subjects and improve the performance of the M-learning. The coding example for subgroup identification can be found at <a href="https://github.com/jitonglou/EHR_ITR">this GitHub repository</a>, while it is not a function of the <code>MultiMlearn</code> package.</p>
+<p>Also, the proposed model can incorporate the identified latent subgroup information to alleviate confounding effects among subjects and improve the performance of the M-learning. The coding example for subgroup identification can be found on <a href="https://github.com/jitonglou/IdSubgroup">this GitHub repository</a>, while it is currently not a function of the <code>MultiMlearn</code> package.</p>
 </div>
 <div id="documentation" class="section level2">
 <h2>Documentation</h2>
-<p>A simulation study illustrating the necessity of latent subgroup information can be found in <a href="https://github.com/jitonglou/MultiMlearn/vignettes/supp_v3.pdf">this supplementary material</a>. The following explainatory example uses a similar simulation scenario to that stated in Section S.1.</p>
+<p>A simulation study illustrating the necessity of latent subgroup information can be found in <a href="https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf">this supplementary material</a>. The following explainatory example uses a similar simulation scenario to that stated in Section S.1.</p>
 </div>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
@@ -157,32 +157,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="usage" class="section level2">
 <h2>Usage</h2>
-<p>Load the package:</p>
+<p>Load the packages:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MultiMlearn)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(personalized)</span></code></pre></div>
 <div id="simulate-a-dataset" class="section level3">
 <h3>Simulate a dataset</h3>
-<p>Following the settings (equation (1), (2), (5), and (6)) in Section S.1.1 and S.1.2 of the <a href="https://github.com/jitonglou/MultiMlearn/vignettes/supp_v3.pdf">*supplementary material</a>, we simulate a dataset for N=200 subjects. The covariate vector <span class="math inline">\(\mathbf{x}_i\)</span> was set to be p=20 dimensional. Moreover, we set the number of treatments K=4, the number of groups J=4.</p>
+<p>Following the settings (equation (1), (2), (5), and (6)) in Section S.1.1 and S.1.2 of the <a href="https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf">supplementary material</a>, we simulate a dataset for N=200 subjects. The covariate vector <span class="math inline">\(\mathbf{x}_i\)</span> was set to be p=20 dimensional. Moreover, we set the number of treatments K=4, the number of groups J=4.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rseed <span class="ot">=</span> <span class="dv">0</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(rseed)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ?simulate_data # explanation of arguments</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ?pi.true # true propensity model used in the supplementary material</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ?mu.true # true main effects used in the supplementary material</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ?delta.true # true interaction effects used in the supplementary material</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>simdata <span class="ot">=</span> <span class="fu">simulate_data</span>(</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>   <span class="at">N =</span> <span class="dv">200</span>, <span class="at">p =</span> <span class="dv">20</span>, <span class="at">K =</span> <span class="dv">4</span>, <span class="at">J =</span> <span class="dv">4</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>   <span class="at">propensity_func =</span> pi.true, <span class="at">main_func =</span> mu.true, <span class="at">interaction_func =</span> delta.true</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="at">treatment=</span>simdata<span class="sc">$</span>treatment, <span class="at">group=</span>simdata<span class="sc">$</span>cluster) <span class="co"># contingency table of observed treatment vs group</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              group</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; treatment      1  2  3  4</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_1 11 12 15 12</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_2  9 10 14  8</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_3 17 18 11  8</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_4 13 15 11 16</span></span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>simdata <span class="ot">=</span> <span class="fu">simulate_data</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>   <span class="at">N =</span> <span class="dv">200</span>, <span class="at">p =</span> <span class="dv">20</span>, <span class="at">K =</span> <span class="dv">4</span>, <span class="at">J =</span> <span class="dv">4</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>   <span class="at">propensity_func =</span> pi.true, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>   <span class="at">main_func =</span> mu.true, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>   <span class="at">interaction_func =</span> delta.true</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ?simulate_data # explanations of function arguments and the columns in the returned data frame </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># ?pi.true # true propensity model used in the supplementary material</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ?mu.true # true main effects used in the supplementary material</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ?delta.true # true interaction effects used in the supplementary material</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="at">treatment=</span>simdata<span class="sc">$</span>treatment, <span class="at">group=</span>simdata<span class="sc">$</span>cluster) <span class="co"># contingency table of observed treatment vs group</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              group</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; treatment      1  2  3  4</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_1 11 12 15 12</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_2  9 10 14  8</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_3 17 18 11  8</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   treatment_4 13 15 11 16</span></span></code></pre></div>
 </div>
 <div id="estimate-propensity-and-prognostic-scores" class="section level3">
 <h3>Estimate propensity and prognostic scores</h3>
@@ -305,6 +308,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We performs a nested cross-validation (on tuning parameters) of weighted support vector machines (SVMs) to fit the M-learning model and estimate ITRs.</p>
 <div id="create-the-final-dataset-and-compute-distance-between-subjects" class="section level4">
 <h4>Create the final dataset and compute distance between subjects</h4>
+<p>Incorporate the estimated propensity and prognostics scores to the feature set, and compute the Euclidean distance between subjects based on the features.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="do">## final data frame</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>data_feature <span class="ot">=</span> <span class="fu">data.frame</span>(</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  data_covariate <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">reward_res =</span> reward),</span>
@@ -317,13 +321,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>ID, <span class="sc">-</span>cluster, <span class="sc">-</span>treatment, <span class="sc">-</span>reward, <span class="sc">-</span>reward_res) <span class="sc">%&gt;%</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dist</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Create an index data frame to select the corresponding row of the distance matrix</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>idx_data_feature <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">ID=</span>data_feature<span class="sc">$</span>ID, <span class="at">index=</span><span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(data_feature)) </span></code></pre></div>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">c</span>(dist_feature))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.000   3.498   3.869   3.810   4.235   6.276</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Create an index data frame to select the corresponding row of the distance matrix</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>idx_data_feature <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">ID=</span>data_feature<span class="sc">$</span>ID, <span class="at">index=</span><span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(data_feature)) </span></code></pre></div>
 </div>
 <div id="fit-the-m-learning-model" class="section level4">
 <h4>Fit the M-learning model</h4>
-<p>We split the data to 3 folds. In each test fold, the tuning parameter in SVMs (cost of constraints violation) is selected from <span class="math inline">\(\{2^k:k=0,\pm1,\ldots,\pm8\}\)</span> using another layer of 3-fold cross-validation.</p>
+<p>We split the data to 3 folds by letting <code>nfolds_outer=3</code>. In each test fold, the tuning parameter in SVMs (cost of constraints violation) is selected from <span class="math inline">\(\{2^k:k=0,\pm1,\ldots,\pm8\}\)</span> using another layer of 3-fold cross-validation (<code>nfolds_inner=3</code>).</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">## User inputs</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ksvm.grid <span class="ot">=</span> <span class="fu">expand.grid</span>(<span class="at">C =</span> <span class="dv">2</span><span class="sc">^</span>(<span class="sc">-</span><span class="dv">8</span><span class="sc">:</span><span class="dv">8</span>)) <span class="co"># a data frame of the tuning parameter</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>nfolds_outer <span class="ot">=</span> <span class="dv">3</span> <span class="co"># number of folds in the outer layer of the nested cross-validation</span></span>
@@ -331,10 +338,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>g_func <span class="ot">=</span> <span class="cf">function</span>(x){<span class="fu">abs</span>(x)} <span class="co"># weights on the outcome in support vector machines</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>max_size <span class="ot">=</span> <span class="dv">1</span> <span class="co"># maximum size of the matched set</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit M-learning model (around 2 minutes)</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit M-learning model (around 1 minute)</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(rseed)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ?weighted.ksvm.2.cv # explanation of arguments</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ITR <span class="ot">=</span> <span class="fu">weighted.ksvm.2.cv</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ?mlearn.wsvm.cv # explanation of arguments</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ITR <span class="ot">=</span> <span class="fu">mlearn.wsvm.cv</span>(</span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>data_feature, <span class="at">idx=</span>idx_data_feature,</span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">trts=</span><span class="fu">levels</span>(data_feature<span class="sc">$</span>treatment), <span class="at">max_size=</span>max_size,</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">delta=</span><span class="fu">max</span>(dist_feature), <span class="at">dist_mat=</span>dist_feature, <span class="at">g_func=</span>g_func,</span>
@@ -343,38 +350,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">foldid_outer=</span><span class="cn">NULL</span></span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 1 has 33 training samples.&quot;</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 1 has 22 training samples.&quot;</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 2 has 22 training samples.&quot;</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 3 has 22 training samples.&quot;</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 1 is done.&quot;</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 2 has 33 training samples.&quot;</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 1 has 22 training samples.&quot;</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 2 has 22 training samples.&quot;</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 3 has 22 training samples.&quot;</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 2 is done.&quot;</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 3 has 34 training samples.&quot;</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 1 has 22 training samples.&quot;</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 2 has 23 training samples.&quot;</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Inner fold 3 has 23 training samples.&quot;</span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 3 is done.&quot;</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ITR)</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Length Class      Mode   </span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; fit           3     -none-     list   </span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; foldid_outer 50     -none-     numeric</span></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; prediction    5     data.frame list</span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ITR<span class="sc">$</span>prediction)</span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   ID    reward   treatment        vote fold</span></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  2 2.7538025 treatment_1 treatment_1    2</span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  5 0.3607558 treatment_3 treatment_1    1</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  7 3.5833142 treatment_1 treatment_1    3</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 14 0.8700615 treatment_2 treatment_1    1</span></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 15 0.4640756 treatment_2 treatment_1    1</span></span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 16 2.5734038 treatment_3 treatment_1    2</span></span></code></pre></div>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 1 is done.&quot;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 2 has 33 training samples.&quot;</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 2 is done.&quot;</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 3 has 34 training samples.&quot;</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Outer fold 3 is done.&quot;</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ITR)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Length Class      Mode   </span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; fit           3     -none-     list   </span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; foldid_outer 50     -none-     numeric</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; prediction    5     data.frame list</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ITR<span class="sc">$</span>prediction) <span class="co"># &quot;vote&quot; represents the recommended treatments for the subjects. &quot;treatment&quot; represents the observed treatments.</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   ID    reward   treatment        vote fold</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  2 2.7538025 treatment_1 treatment_1    2</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  5 0.3607558 treatment_3 treatment_1    1</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  7 3.5833142 treatment_1 treatment_1    3</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 14 0.8700615 treatment_2 treatment_1    1</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 15 0.4640756 treatment_2 treatment_1    1</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 16 2.5734038 treatment_3 treatment_1    2</span></span></code></pre></div>
 </div>
 </div>
 <div id="summarize-results" class="section level3">
 <h3>Summarize results</h3>
-<p>We extract the recommended treatments of the ITR, and then calculate the empirical value function (EVF) and misclassification rate as equation (3) and equation (4) in the supplementary material.</p>
+<p>We extract the recommended treatments of the ITR, and then calculate the empirical value function (EVF) and misclassification rate as equation (3) and equation (4) in the <a href="https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf">supplementary material</a>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## create a function to calculate EVF</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>evf.func <span class="ot">=</span> <span class="cf">function</span>(reward, pi, x, y){</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  flag <span class="ot">=</span> (x<span class="sc">==</span>y)</span>
@@ -383,7 +381,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="do">## EVF and misclassification rate of observed and recommended treatments</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>summary_evf <span class="ot">=</span> ITR<span class="sc">$</span>prediction <span class="sc">%&gt;%</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(simdata <span class="sc">%&gt;%</span> <span class="fu">select</span>(ID, pi_true, <span class="fu">contains</span>(<span class="st">&quot;opt&quot;</span>)),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(simdata <span class="sc">%&gt;%</span> <span class="fu">select</span>(ID, pi_true, <span class="fu">contains</span>(<span class="st">&quot;opt&quot;</span>)), <span class="co"># join the simdata to use true propensity score and optimal treatment information</span></span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">&quot;ID&quot;</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fold) <span class="sc">%&gt;%</span></span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
@@ -410,7 +408,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Mean   :16.67  </span></span>
 <span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3rd Qu.:17.00  </span></span>
 <span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Max.   :17.00</span></span></code></pre></div>
-<p>Compared with the observed treatments, the recommended treatments by M-learning have a greater EVF (2.0159 vs 1.1622) and a lower misclassification rate (0 vs. 0.7806) on average. </br> To obtain the same results in Table S1 and Figure S1 in Section S.1.3 of the supplementary material, you need to run the above scripts for group 2 to 4, and repeat the procedure for 100 times using <code>rseed=1,...,100</code>, <code>ntree=seq(500,5000,500)</code>, <code>ksvm.grid = expand.grid(C = 2^(-15:15))</code>, <code>nfolds_outer = 5</code>, and <code>nfolds_outer = 5</code>. Each replication can be done parrellely.</p>
+<p>Compared with the observed treatments, the recommended treatments by M-learning have a greater EVF (2.0159 vs 1.1622) and a lower misclassification rate (0 vs. 0.7806) on average. </br> To reproduce the results in Table S1 and Figure S1 in Section S.1.3 of the <a href="https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf">supplementary material</a>, you need to run the above scripts for group 2 to 4, and repeat the procedure for 100 times using <code>rseed=1,...,100</code>, <code>ntree=seq(500,5000,500)</code>, <code>ksvm.grid = expand.grid(C = 2^(-15:15))</code>, <code>nfolds_outer = 5</code>, and <code>nfolds_outer = 5</code>. Each replication can be done by parallel computing.</p>
 </div>
 </div>
 

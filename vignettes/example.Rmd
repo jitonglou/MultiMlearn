@@ -34,7 +34,7 @@ devtools::install_github("jitonglou/MultiMlearn")
 ```
 
 ## Usage
-Load the package:
+Load the packages:
 ```{r setup}
 library(MultiMlearn)
 library(dplyr)
@@ -166,7 +166,7 @@ head(ITR$prediction) # "vote" represents the recommended treatments for the subj
 ```
 
 ### Summarize results
-We extract the recommended treatments of the ITR, and then calculate the empirical value function (EVF) and misclassification rate as equation (3) and equation (4) in the supplementary material. 
+We extract the recommended treatments of the ITR, and then calculate the empirical value function (EVF) and misclassification rate as equation (3) and equation (4) in the [supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf). 
 ```{r result}
 ## create a function to calculate EVF
 evf.func = function(reward, pi, x, y){
@@ -191,5 +191,5 @@ summary_evf = ITR$prediction %>%
 summary(summary_evf)
 ```
 Compared with the observed treatments, the recommended treatments by M-learning have a greater EVF (2.0159 vs 1.1622) and a lower misclassification rate (0 vs. 0.7806) on average. </br> 
-To reproduce the results in Table S1 and Figure S1 in Section S.1.3 of the [supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf), you need to run the above scripts for group 2 to 4, and repeat the procedure for 100 times using `rseed=1,...,100`, `ntree=seq(500,5000,500)`, `ksvm.grid = expand.grid(C = 2^(-15:15))`, `nfolds_outer = 5`, and `nfolds_outer = 5`. Each replication can be done parrellely. 
+To reproduce the results in Table S1 and Figure S1 in Section S.1.3 of the [supplementary material](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf), you need to run the above scripts for group 2 to 4, and repeat the procedure for 100 times using `rseed=1,...,100`, `ntree=seq(500,5000,500)`, `ksvm.grid = expand.grid(C = 2^(-15:15))`, `nfolds_outer = 5`, and `nfolds_outer = 5`. Each replication can be done by parallel computing. 
 
