@@ -26,7 +26,7 @@ for (file in files){source(file)}
 
 
 ## Vignette
-An implementation of the `MultiMlearn` package to a simulated dataset can refer to [this html file](https://github.com/jitonglou/MultiMlearn/blob/master/doc/example.html) and [this R Markdown file](https://github.com/jitonglou/MultiMlearn/blob/master/doc/example.Rmd). Details of the simulation study can be found in Section S.1 of [this pdf document](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf).  
+An implementation of the `MultiMlearn` package to a simulated dataset can refer to [this R Markdown file](https://github.com/jitonglou/MultiMlearn/blob/master/doc/example.Rmd) and [this html file](https://github.com/jitonglou/MultiMlearn/blob/master/doc/example.html). Details of the simulation study can be found in Section S.1 of [this pdf document](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf).  
 
 ## Help files of functions
 If you successfully install the package, then you can access the help files of some main functions by:
