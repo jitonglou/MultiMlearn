@@ -4,4 +4,4 @@ data-raw/
 README.Rmd
 .Rhistory
 .Rbuildignore
-.Rproj
+*.Rproj
