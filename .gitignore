@@ -1,7 +1,7 @@
 .Rproj.user
 inst/doc
-^MultiMlearn/data-raw
-^MultiMlearn/README.Rmd
-^MultiMlearn/.Rhistory$
-^MultiMlearn/.Rbuildignore$
-^MultiMlearn/MultiMlearn.Rproj
+data-raw/
+README.Rmd
+.Rhistory
+.Rbuildignore
+.Rproj

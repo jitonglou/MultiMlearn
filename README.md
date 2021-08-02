@@ -35,10 +35,9 @@ for (file in files){source(file)}
 ## Vignette
 
 An implementation of the `MultiMlearn` package to a simulated dataset
-can refer to [this R Markdown
-file](https://github.com/jitonglou/MultiMlearn/blob/master/doc/example.Rmd)
-and [this html
-file](https://github.com/jitonglou/MultiMlearn/blob/master/doc/example.html).
+can refer to [here](https://jitonglou.github.io/MultiMlearn_test/) and
+[this R Markdown
+file](https://github.com/jitonglou/MultiMlearn/blob/master/vignettes/example.Rmd).
 Details of the simulation study can be found in Section S.1 of [this pdf
 document](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf).
 
