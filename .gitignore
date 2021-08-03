@@ -1,7 +1,9 @@
 .Rproj.user
 inst/doc
-data-raw/
+data_raw/
 README.Rmd
 .Rhistory
 .Rbuildignore
 *.Rproj
+_pkgdown.yml
+docs

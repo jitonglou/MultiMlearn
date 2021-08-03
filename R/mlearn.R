@@ -155,7 +155,7 @@ evf = function(data, pred, propensity){
 #' @param g_func a function that transforms the differences between outcomes
 #' of a set of subjects and the subjects in their matched sets to the weights
 #' in SVMs. In `equation (7)` in `Section 2.2` of the manuscript,
-#' `g(\cdot) = |\cdot|` and the weights are `|Rj-Ri|`.
+#' `g(.) = |.|` and the weights are `|Rj-Ri|`.
 #' @param kernel the kernel function used in SVMs. Supported argument values
 #' can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
 #' Default: "rbfdot".
@@ -292,7 +292,7 @@ mlearn.wsvm = function(
 #' @param g_func a function that transforms the differences between outcomes
 #' of a set of subjects and the subjects in their matched sets to the weights
 #' in SVMs. In `equation (7)` in `Section 2.2` of the manuscript,
-#' `g(\cdot) = |\cdot|` and the weights are `|Rj-Ri|`.
+#' `g(.) = |.|` and the weights are `|Rj-Ri|`.
 #' @param kernel the kernel function used in SVMs. Supported argument values
 #' can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
 #' Default: "rbfdot".
@@ -315,7 +315,7 @@ mlearn.wsvm = function(
 #'   Same as `tuneGrid`.
 #'   \item `best_param`: the best tuning parameter(s).
 #'   \item `best_idx`: the index of the best tuning parameter(s) in `tuneGrid`/`params`.
-#'   \item `cv_mat: the matrix of the metric values for the cross-validation.
+#'   \item `cv_mat`: the matrix of the metric values for the cross-validation.
 #'   \item `cv_est`: the cross-validation estimators (row means of `cv_mat`).
 #'   \item `foldid_inner`: a vector recording the split of folds.
 #' }
@@ -433,7 +433,7 @@ mlearn.wsvm.tune = function(
 #' @param g_func a function that transforms the differences between outcomes
 #' of a set of subjects and the subjects in their matched sets to the weights
 #' in SVMs. In `equation (7)` in `Section 2.2` of the manuscript,
-#' `g(\cdot) = |\cdot|` and the weights are `|Rj-Ri|`.
+#' `g(.) = |.|` and the weights are `|Rj-Ri|`.
 #' @param kernel the kernel function used in SVMs. Supported argument values
 #' can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
 #' Default: "rbfdot".

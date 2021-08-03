@@ -1,7 +1,5 @@
-‘MultiMlearn’ package
+MultiMlearn
 ================
-
-## Overview
 
 The goal of `MultiMlearn` is to provide a computing approach to estimate
 individualized treatment rules under the setting of multicategory
@@ -35,8 +33,9 @@ for (file in files){source(file)}
 ## Vignette
 
 An implementation of the `MultiMlearn` package to a simulated dataset
-can refer to [here](https://jitonglou.github.io/MultiMlearn_test/) and
-[this R Markdown
+can refer to [this
+website](https://jitonglou.github.io/MultiMlearn/articles/example.html)
+and [this R Markdown
 file](https://github.com/jitonglou/MultiMlearn/blob/master/vignettes/example.Rmd).
 Details of the simulation study can be found in Section S.1 of [this pdf
 document](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf).

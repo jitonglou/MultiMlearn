@@ -1,5 +1,5 @@
 ---
-title: "Vignette of 'MultiMlearn'"
+title: "Introduction to MultiMlearn"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{example}
@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Overview
 The `MultiMlearn` package is designed for estimating the individualized treatment rules (ITRs) under the setting of multicategory treatments. It is designed for data from observational studies (such as electronic health records), but it can also be used for randomized controlled trials. </br>
 
 The `MultiMlearn` package implements a matched learning (M-learning) model that uses the one-versus-one approach to convert the multicategory treatment comparison to a set of binary classification problems. </br>

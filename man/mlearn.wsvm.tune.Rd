@@ -45,8 +45,8 @@ This matrix must include all subjects in \code{train_data}.}
 
 \item{g_func}{a function that transforms the differences between outcomes
 of a set of subjects and the subjects in their matched sets to the weights
-in SVMs. In \code{equation (6)} in \verb{Section 2.2} of the manuscript,
-\verb{g(\\cdot) = |\\cdot|} and the weights are \verb{|Rj-Ri|}.}
+in SVMs. In \code{equation (7)} in \verb{Section 2.2} of the manuscript,
+\verb{g(.) = |.|} and the weights are \verb{|Rj-Ri|}.}
 
 \item{kernel}{the kernel function used in SVMs. Supported argument values
 can be found in \code{\link[kernlab]{ksvm}} and \code{\link[kernlab]{dots}}.
@@ -75,7 +75,9 @@ A list with 7 sublists as follows:
 Same as \code{tuneGrid}.
 \item \code{best_param}: the best tuning parameter(s).
 \item \code{best_idx}: the index of the best tuning parameter(s) in \code{tuneGrid}/\code{params}.
-\item \verb{cv_mat: the matrix of the metric values for the cross-validation. \\item }cv_est\verb{: the cross-validation estimators (row means of }cv_mat\verb{). \\item }foldid_inner`: a vector recording the split of folds.
+\item \code{cv_mat}: the matrix of the metric values for the cross-validation.
+\item \code{cv_est}: the cross-validation estimators (row means of \code{cv_mat}).
+\item \code{foldid_inner}: a vector recording the split of folds.
 }
 }
 \description{
