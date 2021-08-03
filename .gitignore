@@ -6,4 +6,3 @@ README.Rmd
 .Rbuildignore
 *.Rproj
 _pkgdown.yml
-docs
