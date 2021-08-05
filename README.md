@@ -42,8 +42,10 @@ document](https://github.com/jitonglou/MultiMlearn/blob/master/doc/supp_v3.pdf).
 
 ## Help files of functions
 
-If you successfully install the package, then you can access the help
-files of some main functions by:
+The help files of functions can be found on [this
+website](https://jitonglou.github.io/MultiMlearn/reference/index.html).
+Also, after you successfully install the package, you can access the
+help files of some main functions by:
 
 ``` r
 library(MultiMlearn)
